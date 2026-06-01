@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Road Trip Scandinavie — Juillet 2025</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f5f0eb; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+    const GROUP = [
+      { profil: "Adulte (28+)", count: 3, pass: 280, note: "× 3 pers." },
+      { profil: "Jeune (–28 ans)", count: 1, pass: 212, note: "× 1 pers." },
+      { profil: "Senior (60+)", count: 1, pass: 252, note: "× 1 pers." },
+    ];
+
+    const days = [
+      {
+        date: "Jeu 9 juillet",
+        label: "Le Marathon Aller",
+        emoji: "🚄",
+        location: "Clermont-Ferrand → Copenhague",
+        accent: "#1a6fbd",
+        bg: "#e8f4fd",
+        passDay: "JOUR 1",
+        events: [
+          { time: "6h30", desc: "Départ Clermont-Ferrand — couvert par le pass dès ici" },
+          { time: "~10h", desc: "Paris Gare de Lyon → correspondance TGV/ICE vers Karlsruhe + Hambourg" },
+          { time: "~19h", desc: "Arrivée Hambourg Hbf" },
+          { time: "23h00", desc: "Train de nuit Hambourg → Copenhague (siège normal — ~5h, pas de couchette)" },
+        ],
+        tickets: [
+          { label: "Pass Interrail — Clermont → Paris → Hambourg → Copenhague", prix: "Pass utilisé (Jour 1)", green: true },
+          { label: "Réservation siège TGV France (obligatoire avec Interrail)", prix: "~10 €/pers", urgent: true, note: "À faire sur sncf-connect.com" },
+          { label: "Réservation siège train nuit Hambourg → Copenhague", prix: "~5–10 €/pers" },
+        ],
+      },
+      {
+        date: "Ven 10 → Dim 12 juillet",
+        label: "Copenhague",
+        emoji: "🇩🇰",
+        location: "Copenhague",
+        accent: "#c8860a",
+        bg: "#fff8e1",
+        passDay: null,
+        events: [
+          { time: "4h30", desc: "Arrivée à Copenhague" },
+          { time: "Ven 10", desc: "Nyhavn, vélo dans la ville, Christiania" },
+          { time: "Sam 11", desc: "Zoo de Copenhague — l'un des plus beaux d'Europe du Nord" },
+          { time: "Dim 12", desc: "Tivoli — parc historique en plein cœur de la ville, manèges + jardin" },
+        ],
+        tickets: [
+          { label: "Zoo de Copenhague — adulte / jeune", prix: "~30 €/pers" },
+          { label: "Zoo de Copenhague — senior", prix: "~22 €/pers" },
+          { label: "Tivoli — entrée du parc", prix: "~20 €/pers" },
+          { label: "Tivoli — pass manèges illimité (optionnel)", prix: "~45 €/pers", note: "Sinon tickets à l'unité ~3–5 € chacun" },
+        ],
+      },
+      {
+        date: "Lun 13 juillet",
+        label: "Direction la Suède",
+        emoji: "🌲",
+        location: "Copenhague → Småland (Växjö)",
+        accent: "#2e7d32",
+        bg: "#e8f5e9",
+        passDay: "JOUR 2",
+        events: [
+          { time: "Matin", desc: "Train direct Copenhague → Växjö (~2h30)" },
+          { time: "Après-midi", desc: "Installation cabane en bois, balade en forêt" },
+        ],
+        tickets: [
+          { label: "Pass Interrail — Copenhague → Växjö", prix: "Pass utilisé (Jour 2)", green: true },
+          { label: "Réservation siège SJ (train suédois)", prix: "~5 €/pers" },
+          { label: "Cabane/hébergement nature — 2 nuits (à partager × 5)", prix: "80–160 €/nuit", urgent: true },
+        ],
+      },
+      {
+        date: "Mar 14 juillet",
+        label: "Nature & Canoë",
+        emoji: "🛶",
+        location: "Småland, Suède",
+        accent: "#2e7d32",
+        bg: "#e8f5e9",
+        passDay: null,
+        events: [
+          { time: "Journée", desc: "Canoë sur les lacs, forêt, cabane en bois" },
+          { time: "Soir", desc: "Barbecue au bord du lac" },
+        ],
+        tickets: [
+          { label: "Location canoë à la journée", prix: "20–40 €/embarcation" },
+        ],
+      },
+      {
+        date: "Mer 15 juillet",
+        label: "Odense — Andersen",
+        emoji: "📖",
+        location: "Småland → Odense, Danemark",
+        accent: "#ad1457",
+        bg: "#fce4ec",
+        passDay: "JOUR 3",
+        events: [
+          { time: "Matin", desc: "Train Växjö → Odense (~3h)" },
+          { time: "Après-midi", desc: "Vieille ville, maison natale d'Andersen, cathédrale" },
+        ],
+        tickets: [
+          { label: "Pass Interrail — Växjö → Odense", prix: "Pass utilisé (Jour 3)", green: true },
+          { label: "Musée H.C. Andersen (optionnel)", prix: "~15 €/pers" },
+          { label: "Hébergement Odense — 2 nuits (à partager × 5)", prix: "90–160 €/nuit", urgent: true },
+        ],
+      },
+      {
+        date: "Jeu 16 juillet",
+        label: "Legoland !",
+        emoji: "🧱",
+        location: "Billund (depuis Odense)",
+        accent: "#e65100",
+        bg: "#fff3e0",
+        passDay: null,
+        events: [
+          { time: "Matin", desc: "Bus ou voiture de location Odense → Billund (~1h)" },
+          { time: "10h–18h", desc: "Journée complète à Legoland Billund" },
+          { time: "Soir", desc: "Retour à Odense" },
+        ],
+        tickets: [
+          { label: "Bus régional Odense ↔ Billund", prix: "~10 €/pers A/R" },
+          { label: "OU voiture de location journée (÷ 5)", prix: "50–80 €" },
+          { label: "Entrée Legoland — adulte / jeune", prix: "~62 €/pers", urgent: true },
+          { label: "Entrée Legoland — senior (tarif réduit)", prix: "~52 €/pers", urgent: true },
+        ],
+      },
+      {
+        date: "Ven 17 juillet",
+        label: "Grand Retour",
+        emoji: "🌙",
+        location: "Odense → Hambourg → Paris",
+        accent: "#4527a0",
+        bg: "#ede7f6",
+        passDay: "JOUR 4",
+        events: [
+          { time: "Matin", desc: "Train Odense → Hambourg (~2h30)" },
+          { time: "Après-midi", desc: "Hambourg libre : Speicherstadt, Elbe, Reeperbahn" },
+          { time: "21h55", desc: "Train de nuit European Sleeper Hambourg → Paris (couchettes 🛏️)" },
+        ],
+        tickets: [
+          { label: "Pass Interrail — Odense → Hambourg + European Sleeper", prix: "Pass utilisé (Jour 4)", green: true },
+          { label: "Supplément couchette retour × 5 (European Sleeper)", prix: "42–74 €/pers", urgent: true, note: "À réserver MAINTENANT sur europeansleepertrains.com" },
+        ],
+      },
+      {
+        date: "Sam 18 juillet",
+        label: "Arrivée à Montargis",
+        emoji: "🏠",
+        location: "Paris → Montargis",
+        accent: "#1a6fbd",
+        bg: "#e8f4fd",
+        passDay: null,
+        events: [
+          { time: "~8h", desc: "Arrivée Paris Gare du Nord" },
+          { time: "~10h", desc: "Liaison vers Paris Gare de Bercy / Lyon" },
+          { time: "~11h", desc: "Intercités Paris → Montargis (billet classique, pass expiré)" },
+        ],
+        tickets: [
+          { label: "Paris → Montargis — adulte / jeune (Intercités SNCF)", prix: "~15–25 €/pers", note: "Pass expiré — réserver sur sncf-connect.com" },
+          { label: "Paris → Montargis — senior", prix: "~12–20 €/pers" },
+        ],
+      },
+    ];
+
+    const budgetTransport = [
+      { label: "Pass Interrail 4 jours", a: 280, j: 212, s: 252 },
+      { label: "Résa siège TGV France", a: 10, j: 10, s: 10 },
+      { label: "Résa siège Hambourg → CPH", a: 8, j: 8, s: 8 },
+      { label: "Supplément couchette retour (European Sleeper)", a: 58, j: 58, s: 58 },
+      { label: "Paris → Montargis (billet classique)", a: 20, j: 20, s: 16 },
+      { label: "Transport local (métro, bus)", a: 25, j: 25, s: 25 },
+      { label: "Bus ou voiture Legoland (÷5)", a: 14, j: 14, s: 14 },
+    ];
+
+    const budgetActivites = [
+      { label: "Zoo de Copenhague", a: 30, j: 30, s: 22 },
+      { label: "Tivoli (entrée + pass manèges)", a: 65, j: 65, s: 65 },
+      { label: "Legoland Billund", a: 62, j: 62, s: 52 },
+      { label: "Canoë (÷5 par embarcation)", a: 15, j: 15, s: 15 },
+      { label: "Musée Andersen / visites (optionnel)", a: 15, j: 15, s: 15 },
+      { label: "Hébergement Suède × 2 nuits (÷5)", a: 48, j: 48, s: 48 },
+      { label: "Hébergement Odense × 2 nuits (÷5)", a: 50, j: 50, s: 50 },
+    ];
+
+    const sumCol = (arr, key) => arr.reduce((acc, r) => acc + r[key], 0);
+
+    function PassBadge({ label }) {
+      return (
+        <span style={{ background: "#1a6fbd", color: "white", fontSize: 10, fontFamily: "monospace", padding: "2px 8px", borderRadius: 10, letterSpacing: 1, marginLeft: 8 }}>
+          {label}
+        </span>
+      );
+    }
+
+    function BudgetTable({ rows, title, icon }) {
+      const totA = sumCol(rows, "a"), totJ = sumCol(rows, "j"), totS = sumCol(rows, "s");
+      return (
+        <div>
+          <div style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", color: "#666", marginBottom: 10 }}>{icon} {title}</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 52px 52px 52px", gap: "0 6px", marginBottom: 4 }}>
+            <div />
+            {["Adulte", "Jeune", "Senior"].map((h, i) => (
+              <div key={i} style={{ fontSize: 10, textAlign: "right", color: ["#aaa","#7ec8e3","#f0c040"][i], letterSpacing: 1 }}>{h}</div>
+            ))}
+          </div>
+          {rows.map((r, i) => (
+            <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 52px 52px 52px", gap: "0 6px", padding: "5px 0", borderBottom: "1px solid #2a2a3e", alignItems: "center" }}>
+              <span style={{ fontSize: 12, color: "#aaa" }}>{r.label}</span>
+              <span style={{ fontSize: 12, color: "#ddd", textAlign: "right" }}>{r.a} €</span>
+              <span style={{ fontSize: 12, color: "#7ec8e3", textAlign: "right" }}>{r.j} €</span>
+              <span style={{ fontSize: 12, color: "#f0c040", textAlign: "right" }}>{r.s} €</span>
+            </div>
+          ))}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 52px 52px 52px", gap: "0 6px", padding: "8px 0 0" }}>
+            <span style={{ fontSize: 13, fontWeight: "bold", color: "white" }}>Sous-total</span>
+            <span style={{ fontSize: 13, fontWeight: "bold", color: "#ddd", textAlign: "right" }}>{totA} €</span>
+            <span style={{ fontSize: 13, fontWeight: "bold", color: "#7ec8e3", textAlign: "right" }}>{totJ} €</span>
+            <span style={{ fontSize: 13, fontWeight: "bold", color: "#f0c040", textAlign: "right" }}>{totS} €</span>
+          </div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [openDay, setOpenDay] = useState(null);
+      const [showBudget, setShowBudget] = useState(false);
+      const grandA = sumCol(budgetTransport, "a") + sumCol(budgetActivites, "a");
+      const grandJ = sumCol(budgetTransport, "j") + sumCol(budgetActivites, "j");
+      const grandS = sumCol(budgetTransport, "s") + sumCol(budgetActivites, "s");
+
+      return (
+        <div style={{ fontFamily: "'Georgia', 'Times New Roman', serif", background: "#f5f0eb", minHeight: "100vh", padding: "24px 16px", maxWidth: 700, margin: "0 auto" }}>
+          <div style={{ textAlign: "center", marginBottom: 28 }}>
+            <div style={{ fontSize: 12, letterSpacing: 5, textTransform: "uppercase", color: "#aaa", marginBottom: 4 }}>Road Trip</div>
+            <div style={{ fontSize: 34, letterSpacing: 6, color: "#333", fontStyle: "italic", marginBottom: 6 }}>Scandinavie</div>
+            <div style={{ fontSize: 12, letterSpacing: 3, color: "#999", marginBottom: 12 }}>9 – 18 Juillet · 5 personnes · Retour Montargis</div>
+            <div style={{ display: "flex", justifyContent: "center", gap: 8, flexWrap: "wrap" }}>
+              <span style={{ background: "#1a6fbd", color: "white", padding: "3px 12px", borderRadius: 20, fontSize: 11, letterSpacing: 1 }}>PASS INTERRAIL 4 JOURS</span>
+              <span style={{ background: "#e74c3c", color: "white", padding: "3px 12px", borderRadius: 20, fontSize: 11, letterSpacing: 1 }}>1 TRAIN COUCHETTE (RETOUR)</span>
+            </div>
+          </div>
+
+          <div style={{ background: "white", borderRadius: 12, padding: 18, marginBottom: 20, boxShadow: "0 2px 10px rgba(0,0,0,0.07)", borderLeft: "4px solid #1a6fbd" }}>
+            <div style={{ fontSize: 11, letterSpacing: 3, textTransform: "uppercase", color: "#aaa", marginBottom: 12 }}>💳 Pass Interrail Global — 4 jours / 1 mois</div>
+            {GROUP.map((g, i) => (
+              <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "7px 0", borderBottom: i < GROUP.length - 1 ? "1px solid #f0f0f0" : "none" }}>
+                <div>
+                  <span style={{ fontSize: 13, fontWeight: "bold", color: "#333" }}>{g.profil}</span>
+                  <span style={{ fontSize: 12, color: "#bbb", marginLeft: 8 }}>{g.note}</span>
+                </div>
+                <div style={{ fontSize: 17, fontWeight: "bold", color: "#1a6fbd" }}>{g.pass} €</div>
+              </div>
+            ))}
+            <div style={{ marginTop: 10, background: "#fff8e1", borderRadius: 8, padding: "8px 12px", fontSize: 12, color: "#c8860a" }}>
+              ⚠️ + Suppléments couchettes retour (European Sleeper) : <strong>42–74 € / pers</strong> — À réserver sur <strong>europeansleepertrains.com</strong>
+            </div>
+          </div>
+
+          {days.map((day, i) => (
+            <div key={i} onClick={() => setOpenDay(openDay === i ? null : i)}
+              style={{ background: "white", borderRadius: 12, marginBottom: 10, boxShadow: "0 2px 8px rgba(0,0,0,0.06)", borderLeft: `4px solid ${day.accent}`, cursor: "pointer", overflow: "hidden" }}>
+              <div style={{ display: "flex", alignItems: "center", padding: "13px 16px", gap: 12, background: openDay === i ? day.bg : "white" }}>
+                <span style={{ fontSize: 22 }}>{day.emoji}</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", color: "#bbb" }}>{day.date}</span>
+                    {day.passDay && <PassBadge label={day.passDay} />}
+                  </div>
+                  <div style={{ fontSize: 15, fontWeight: "bold", color: "#222" }}>{day.label}</div>
+                  <div style={{ fontSize: 11, color: "#999" }}>{day.location}</div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  {day.tickets.some(t => t.urgent) && <div style={{ fontSize: 10, color: "#e74c3c", fontWeight: "bold", marginBottom: 2 }}>🚨 urgent</div>}
+                  <div style={{ fontSize: 16, color: "#ccc" }}>{openDay === i ? "▲" : "▼"}</div>
+                </div>
+              </div>
+              {openDay === i && (
+                <div style={{ padding: "0 16px 16px", borderTop: `1px solid ${day.bg}` }}>
+                  <div style={{ margin: "14px 0 12px" }}>
+                    {day.events.map((ev, j) => (
+                      <div key={j} style={{ display: "flex", gap: 10, marginBottom: 7 }}>
+                        <div style={{ minWidth: 50, fontSize: 11, color: day.accent, fontFamily: "monospace", fontWeight: "bold", paddingTop: 2 }}>{ev.time}</div>
+                        <div style={{ fontSize: 13, color: "#444", lineHeight: 1.5 }}>{ev.desc}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ background: "#fafafa", borderRadius: 8, padding: 12 }}>
+                    <div style={{ fontSize: 10, letterSpacing: 2, textTransform: "uppercase", color: "#bbb", marginBottom: 8 }}>🎫 Billets & Coûts</div>
+                    {day.tickets.map((t, j) => (
+                      <div key={j} style={{ padding: "6px 0", borderBottom: j < day.tickets.length - 1 ? "1px dashed #eee" : "none" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+                          <div style={{ fontSize: 12, color: "#555", flex: 1, lineHeight: 1.4 }}>
+                            {t.urgent && <span style={{ color: "#e74c3c", marginRight: 4 }}>🚨</span>}
+                            {t.label}
+                          </div>
+                          <div style={{ fontSize: 13, fontWeight: "bold", whiteSpace: "nowrap", color: t.green ? "#2e7d32" : "#333" }}>{t.prix}</div>
+                        </div>
+                        {t.note && <div style={{ fontSize: 11, color: "#e65100", marginTop: 2, fontStyle: "italic" }}>↳ {t.note}</div>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+
+          <div style={{ background: "#1c1c2e", color: "white", borderRadius: 12, padding: 20, marginTop: 8, cursor: "pointer" }} onClick={() => setShowBudget(!showBudget)}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div>
+                <div style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", color: "#666", marginBottom: 8 }}>💰 Budget estimé par personne</div>
+                <div style={{ display: "flex", gap: 16 }}>
+                  <div><span style={{ fontSize: 18, fontWeight: "bold", color: "#ddd" }}>{grandA} €</span> <span style={{ fontSize: 10, color: "#555" }}>adulte</span></div>
+                  <div><span style={{ fontSize: 18, fontWeight: "bold", color: "#7ec8e3" }}>{grandJ} €</span> <span style={{ fontSize: 10, color: "#555" }}>jeune</span></div>
+                  <div><span style={{ fontSize: 18, fontWeight: "bold", color: "#f0c040" }}>{grandS} €</span> <span style={{ fontSize: 10, color: "#555" }}>senior</span></div>
+                </div>
+              </div>
+              <div style={{ fontSize: 18, color: "#444", marginTop: 4 }}>{showBudget ? "▲" : "▼"}</div>
+            </div>
+            {showBudget && (
+              <div style={{ marginTop: 20 }}>
+                <div style={{ borderBottom: "1px solid #2a2a3e", paddingBottom: 20, marginBottom: 20 }}>
+                  <BudgetTable rows={budgetTransport} title="Transport & Pass" icon="🚄" />
+                </div>
+                <BudgetTable rows={budgetActivites} title="Hébergements & Activités" icon="🎡" />
+                <div style={{ marginTop: 16, paddingTop: 14, borderTop: "2px solid #333", display: "grid", gridTemplateColumns: "1fr 52px 52px 52px", gap: "0 6px", alignItems: "center" }}>
+                  <span style={{ fontSize: 14, fontWeight: "bold", color: "white" }}>TOTAL</span>
+                  <span style={{ fontSize: 15, fontWeight: "bold", color: "#ddd", textAlign: "right" }}>{grandA} €</span>
+                  <span style={{ fontSize: 15, fontWeight: "bold", color: "#7ec8e3", textAlign: "right" }}>{grandJ} €</span>
+                  <span style={{ fontSize: 15, fontWeight: "bold", color: "#f0c040", textAlign: "right" }}>{grandS} €</span>
+                </div>
+                <div style={{ marginTop: 10, fontSize: 11, color: "#555", lineHeight: 1.6 }}>
+                  * Hébergement Copenhague non inclus (hébergé sur place)<br />
+                  * Tivoli : pass manèges optionnel (sinon ~20 € entrée seulement)<br />
+                  * Couchette European Sleeper : milieu de fourchette retenu (58 €)<br />
+                  * Repas / resto non inclus
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div style={{ background: "#fff5f5", border: "2px solid #e74c3c", borderRadius: 12, padding: 16, marginTop: 14 }}>
+            <div style={{ fontSize: 12, fontWeight: "bold", color: "#e74c3c", marginBottom: 10, letterSpacing: 1 }}>🚨 À RÉSERVER MAINTENANT</div>
+            {[
+           
